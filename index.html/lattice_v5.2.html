@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LATTICE v5.2 // Infinite Lexicon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-magenta: #ff00ea;
+            --bg-dark: #02040a;
+            --glass-bg: rgba(10, 15, 30, 0.6);
+            --glass-border: rgba(0, 243, 255, 0.3);
+        }
+        body { background-color: var(--bg-dark); color: var(--neon-cyan); font-family: 'Share Tech Mono', monospace; display: flex; margin: 0; height: 100vh; overflow: hidden; background-image: radial-gradient(circle at 50% 50%, #0a1128 0%, #02040a 80%); }
+        #sidebar { width: 260px; background: var(--glass-bg); backdrop-filter: blur(10px); border-right: 1px solid var(--glass-border); padding: 20px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; box-shadow: 5px 0 20px rgba(0, 243, 255, 0.1); z-index: 10; }
+        h1 { font-family: 'Orbitron', sans-serif; color: var(--neon-cyan); font-size: 20px; text-align: center; letter-spacing: 3px; margin-top: 0; margin-bottom: 5px; text-shadow: 0 0 10px var(--neon-cyan); }
+        .subtitle { text-align: center; font-size: 10px; color: #668; margin-bottom: 15px; letter-spacing: 1px;}
+        .section-title { font-size: 11px; font-weight: bold; letter-spacing: 2px; margin-top: 10px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 3px;}
+        .palette-btn { padding: 8px; background: rgba(0, 0, 0, 0.4); color: #ddd; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; cursor: pointer; font-family: 'Share Tech Mono', monospace; text-align: left; transition: all 0.3s ease; display: flex; align-items: center; }
+        .palette-btn:hover { background: rgba(0, 243, 255, 0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); transform: translateX(5px); }
+        .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 10px; box-shadow: 0 0 8px currentColor; }
+        .custom-input-group { display: flex; gap: 5px; margin-top: 10px; }
+        .input-wrapper { position: relative; flex: 1; display: flex; align-items: center; }
+        .custom-input-group input[type="text"] { width: 100%; padding: 8px; padding-right: 25px; font-size: 12px; }
+        .custom-input-group button.action { padding: 8px 12px; font-size: 14px; margin: 0; }
+        .clear-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--neon-cyan); font-family: 'Share Tech Mono', monospace; font-size: 18px; cursor: pointer; transition: 0.2s; padding: 0; line-height: 1; }
+        .clear-btn:hover { color: var(--neon-magenta); text-shadow: 0 0 5px var(--neon-magenta); }
+        #main { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .controls { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: var(--glass-bg); backdrop-filter: blur(10px); padding: 15px; border-radius: 8px; border: 1px solid var(--glass-border); display: flex; gap: 10px; z-index: 10; align-items: center; box-shadow: 0 0 20px rgba(0,0,0,0.5); width: 85%; max-width: 900px; }
+        .controls .input-wrapper { flex: 1; }
+        .controls input[type="text"] { width: 100%; padding: 12px; padding-right: 30px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: var(--neon-cyan); font-family: 'Share Tech Mono', monospace; font-size: 14px; outline: none; border-radius: 4px; transition: 0.3s; }
+        .controls input[type="text"]:focus { border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0, 243, 255, 0.3); }
+        button.action { padding: 10px 15px; background: transparent; color: var(--neon-magenta); border: 1px solid var(--neon-magenta); border-radius: 4px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; white-space: nowrap; }
+        button.action:hover { background: var(--neon-magenta); color: #000; box-shadow: 0 0 20px var(--neon-magenta); }
+        button.secondary { border-color: #555; color: #888; }
+        button.secondary:hover { background: #333; color: #fff; box-shadow: 0 0 10px #555; }
+        canvas { flex: 1; width: 100%; height: 100%; cursor: crosshair; }
+        #outputLog { position: absolute; bottom: 20px; right: 20px; width: 300px; max-height: 120px; overflow-y: auto; background: var(--glass-bg); backdrop-filter: blur(5px); color: var(--neon-cyan); font-size: 11px; padding: 15px; border: 1px solid var(--glass-border); border-radius: 4px; pointer-events: none; box-shadow: 0 0 15px rgba(0, 243, 255, 0.1); }
+        pre { white-space: pre-wrap; margin: 0; }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <h1>LATTICE</h1>
+        <div class="subtitle">SYS.VER 5.2 // CLOUD</div>
+        
+        <div class="section-title" style="color:var(--neon-cyan);">MANUAL INJECTION</div>
+        <div class="custom-input-group">
+            <div class="input-wrapper">
+                <input type="text" id="customWord" placeholder="Any word...">
+                <button class="clear-btn" onclick="clearInput('customWord')" title="Clear text">×</button>
+            </div>
+            <button class="action" onclick="addCustomNode()">+</button>
+        </div>
+
+        <div class="section-title" style="color:#4A90E2;">CORE SUBJECTS</div>
+        <div class="palette-btn" onclick="addNode('SELF', '#4A90E2', 110)"><span class="dot" style="background:#4A90E2; color:#4A90E2;"></span>SELF</div>
+        <div class="palette-btn" onclick="addNode('OTHER', '#A9A9A9', 130.81)"><span class="dot" style="background:#A9A9A9; color:#A9A9A9;"></span>OTHER</div>
+        
+        <div class="section-title" style="color:#D0021B;">CORE ACTIONS</div>
+        <div class="palette-btn" onclick="addNode('DESIRE', '#D0021B', 146.83)"><span class="dot" style="background:#D0021B; color:#D0021B;"></span>DESIRE</div>
+        <div class="palette-btn" onclick="addNode('LOVE', '#FF69B4', 261.63)"><span class="dot" style="background:#FF69B4; color:#FF69B4;"></span>LOVE</div>
+        <div class="palette-btn" onclick="addNode('HATE', '#8B0000', 103.83)"><span class="dot" style="background:#8B0000; color:#8B0000;"></span>HATE</div>
+
+        <div class="section-title" style="color:#F5A623;">CORE OBJECTS</div>
+        <div class="palette-btn" onclick="addNode('MONEY', '#F5A623', 220)"><span class="dot" style="background:#F5A623; color:#F5A623;"></span>MONEY</div>
+        <div class="palette-btn" onclick="addNode('FOOD', '#32CD32', 196)"><span class="dot" style="background:#32CD32; color:#32CD32;"></span>FOOD</div>
+        <div class="palette-btn" onclick="addNode('SLEEP', '#8A2BE2', 164.81)"><span class="dot" style="background:#8A2BE2; color:#8A2BE2;"></span>SLEEP</div>
+    </div>
+
+    <div id="main">
+        <div class="controls">
+            <div class="input-wrapper">
+                <input type="text" id="englishInput" placeholder="Input complex human language..." value="I am terrified of the dark ocean but I desperately want to explore it before I die">
+                <button class="clear-btn" onclick="clearInput('englishInput')" title="Clear text">×</button>
+            </div>
+            <button class="action" onclick="parseWithAI()">Parse AI</button>
+            <button class="action" onclick="playOrganicHarmonia()">Harmonia</button>
+            <button class="action secondary" onclick="downloadJSON()">Export</button>
+            <button class="action secondary" onclick="clearCanvas()">Clear</button>
+        </div>
+        <canvas id="latticeCanvas"></canvas>
+    </div>
+
+    <div id="outputLog"><pre>> System initialized. Awaiting input...</pre></div>
+
+    <script>
+        const canvas = document.getElementById('latticeCanvas');
+        const ctx = canvas.getContext('2d');
+        const logDiv = document.getElementById('outputLog').querySelector('pre');
+        
+        function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+        window.addEventListener('resize', resize);
+
+        let currentGraph = { nodes: [], edges: [] };
+        let selectedNodeId = null;
+        let nodeIdCounter = 1;
+        let audioCtx = null;
+        let stars = [];
+        let particles = [];
+        let mouseX = -1000;
+        let mouseY = -1000;
+
+        function clearInput(inputId) {
+            const input = document.getElementById(inputId);
+            input.value = '';
+            input.focus();
+        }
+
+        function initStars() {
+            stars = [];
+            for(let i=0; i<150; i++) {
+                stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 1.5, speed: Math.random() * 0.5 + 0.1 });
+            }
+        }
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left; mouseY = e.clientY - rect.top;
+        });
+        canvas.addEventListener('mouseleave', () => { mouseX = -1000; mouseY = -1000; });
+
+        function addNode(label, color, freq) {
+            const id = 'n' + nodeIdCounter++;
+            const node = { id: id, label: label.toUpperCase(), type: 'custom', color: color, freq: freq, x: canvas.width/2 + (Math.random() - 0.5) * 200, y: canvas.height/2 + (Math.random() - 0.5) * 200, vx: 0, vy: 0 };
+            currentGraph.nodes.push(node);
+            logDiv.innerText = `> Nodule injected: [${node.label}]`;
+        }
+
+        function addCustomNode() {
+            const input = document.getElementById('customWord');
+            const word = input.value.trim();
+            if(!word) return;
+            const hue = Math.random() * 360;
+            const color = `hsl(${hue}, 100%, 60%)`;
+            const freq = 100 + Math.random() * 700; 
+            addNode(word, color, freq);
+            input.value = '';
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left; const my = e.clientY - rect.top;
+            let clickedNode = null;
+            for (let n of currentGraph.nodes) { if (Math.hypot(n.x - mx, n.y - my) < 35) { clickedNode = n; break; } }
+            
+            if (clickedNode) {
+                if (selectedNodeId && selectedNodeId !== clickedNode.id) {
+                    const exists = currentGraph.edges.find(ed => (ed.from === selectedNodeId && ed.to === clickedNode.id) || (ed.from === clickedNode.id && ed.to === selectedNodeId));
+                    if (!exists) { currentGraph.edges.push({ from: selectedNodeId, to: clickedNode.id, style: 'solid' }); logDiv.innerText = `> Binding established.`; }
+                    selectedNodeId = null;
+                } else { selectedNodeId = clickedNode.id; logDiv.innerText = `> Node selected: [${clickedNode.label}]`; }
+            } else { selectedNodeId = null; }
+        });
+
+        function clearCanvas() {
+            currentGraph = { nodes: [], edges: [] };
+            particles = []; selectedNodeId = null;
+            logDiv.innerText = "> Canvas purged.";
+        }
+
+        async function parseWithAI() {
+            const inputText = document.getElementById('englishInput').value;
+            if(!inputText.trim()) return logDiv.innerText = "> ERROR: Input is empty.";
+            logDiv.innerText = "> Contacting Lattice Server...";
+            
+            const systemPrompt = `
+You are the Lattice Translation Engine. Convert the user's English sentence into a structured JSON object representing a semantic graph.
+Extract ALL meaningful concepts, nouns, verbs, adjectives, and states from the sentence.
+Assign each concept a unique id (n1, n2, etc.), an uppercase label, a hex color that matches its emotional tone, and a musical frequency between 100 and 800.
+The JSON must have this exact structure:
+{ "nodes": [ { "id": "n1", "label": "CONCEPT", "type": "subject", "color": "#HEXCODE", "freq": 440.00 } ], "edges": [ { "from": "n1", "to": "n2", "label": "relation", "style": "solid" } ] }
+The 'style' of edges can be 'solid', 'jagged', or 'blocked'.
+Return ONLY the valid JSON object.
+            `;
+
+            try {
+                // THIS NOW CALLS OUR SECURE VERCEL BACKEND
+                const response = await fetch('/api/translate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: systemPrompt, sentence: inputText })
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.error || `Server error: ${response.status}`);
+                }
+
+                const aiData = await response.json();
+                
+                aiData.nodes.forEach(n => {
+                    n.x = canvas.width/2 + (Math.random() - 0.5) * 300; n.y = canvas.height/2 + (Math.random() - 0.5) * 300;
+                    n.vx = 0; n.vy = 0; n.color = n.color || '#888'; n.freq = n.freq || 220;
+                });
+
+                currentGraph = aiData;
+                selectedNodeId = null;
+                logDiv.innerText = `> Lattice materialized. ${currentGraph.nodes.length} concepts.`;
+            } catch (error) {
+                logDiv.innerText = `> ERROR: ${error.message}`;
+            }
+        }
+
+        function physicsStep() {
+            const nodeCount = currentGraph.nodes.length;
+            const repulsion = Math.max(800, nodeCount * 150); 
+            const k = 0.015, damping = 0.90, centerGravity = 0.002, mouseGravity = 0.005, maxVelocity = 8; 
+
+            for (let i = 0; i < nodeCount; i++) {
+                for (let j = i + 1; j < nodeCount; j++) {
+                    let dx = currentGraph.nodes[j].x - currentGraph.nodes[i].x;
+                    let dy = currentGraph.nodes[j].y - currentGraph.nodes[i].y;
+                    let distSq = Math.max(dx*dx + dy*dy, 2000); 
+                    if (distSq < 20000) {
+                        let dist = Math.sqrt(distSq);
+                        let force = repulsion / distSq;
+                        let fx = (dx / dist) * force, fy = (dy / dist) * force;
+                        currentGraph.nodes[i].vx -= fx; currentGraph.nodes[i].vy -= fy;
+                        currentGraph.nodes[j].vx += fx; currentGraph.nodes[j].vy += fy;
+                    }
+                }
+            }
+
+            currentGraph.edges.forEach(edge => {
+                let n1 = currentGraph.nodes.find(n => n.id === edge.from);
+                let n2 = currentGraph.nodes.find(n => n.id === edge.to);
+                if (n1 && n2) {
+                    let dx = n2.x - n1.x, dy = n2.y - n1.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy) || 0.1;
+                    let force = k * (dist - 150); 
+                    let fx = (dx / dist) * force, fy = (dy / dist) * force;
+                    n1.vx += fx; n1.vy += fy; n2.vx -= fx; n2.vy -= fy;
+                }
+            });
+
+            currentGraph.nodes.forEach(n => {
+                n.vx += (canvas.width/2 - n.x) * centerGravity; n.vy += (canvas.height/2 - n.y) * centerGravity;
+                if (mouseX > 0 && mouseY > 0) {
+                    let dx = mouseX - n.x, dy = mouseY - n.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy) || 0.1;
+                    if (dist < 350) { n.vx += (dx / dist) * (mouseGravity * (350 - dist)); n.vy += (dy / dist) * (mouseGravity * (350 - dist)); }
+                }
+                n.vx *= damping; n.vy *= damping;
+                n.vx = Math.max(Math.min(n.vx, maxVelocity), -maxVelocity); n.vy = Math.max(Math.min(n.vy, maxVelocity), -maxVelocity);
+                
+                if (Math.abs(n.vx) + Math.abs(n.vy) > 2 && particles.length < 300) {
+                    particles.push({ x: n.x, y: n.y, color: n.color, life: 1.0, vx: -n.vx * 0.3, vy: -n.vy * 0.3 });
+                }
+                n.x += n.vx; n.y += n.vy;
+                
+                const r = 30;
+                if (n.x < r) { n.x = r; n.vx *= -0.5; } if (n.x > canvas.width - r) { n.x = canvas.width - r; n.vx *= -0.5; }
+                if (n.y < r) { n.y = r; n.vy *= -0.5; } if (n.y > canvas.height - r) { n.y = canvas.height - r; n.vy *= -0.5; }
+            });
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(2, 4, 10, 0.3)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            stars.forEach(star => { ctx.beginPath(); ctx.arc(star.x, star.y, star.size, 0, Math.PI*2); ctx.fill(); star.y += star.speed; if (star.y > canvas.height) star.y = 0; });
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i]; ctx.fillStyle = p.color; ctx.globalAlpha = p.life;
+                ctx.beginPath(); ctx.arc(p.x, p.y, 3 * p.life, 0, Math.PI*2); ctx.fill();
+                p.x += p.vx; p.y += p.vy; p.life -= 0.03; if (p.life <= 0) particles.splice(i, 1);
+            }
+            ctx.globalAlpha = 1.0; 
+
+            currentGraph.edges.forEach(edge => {
+                const from = currentGraph.nodes.find(n => n.id === edge.from), to = currentGraph.nodes.find(n => n.id === edge.to);
+                if (!from || !to) return;
+                ctx.lineWidth = 2; ctx.shadowBlur = 10;
+                if (edge.style === 'jagged') {
+                    ctx.strokeStyle = "#FFD700"; ctx.shadowColor = "#FFD700"; ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo((from.x + to.x)/2 + 15, (from.y + to.y)/2 - 15); ctx.lineTo(to.x, to.y); ctx.stroke();
+                } else if (edge.style === 'blocked') {
+                    ctx.strokeStyle = "#ff3333"; ctx.shadowColor = "#ff3333"; ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(to.x, to.y); ctx.stroke(); ctx.setLineDash([]); 
+                } else {
+                    ctx.strokeStyle = "rgba(0, 243, 255, 0.6)"; ctx.shadowColor = "#00f3ff"; ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(to.x, to.y); ctx.stroke();
+                }
+                ctx.shadowBlur = 0;
+            });
+
+            const r = currentGraph.nodes.length > 15 ? 20 : 30, fontSize = currentGraph.nodes.length > 15 ? '9px' : '11px';
+            currentGraph.nodes.forEach(node => {
+                ctx.shadowBlur = 25; ctx.shadowColor = node.color; ctx.fillStyle = node.color;
+                ctx.beginPath(); ctx.arc(node.x, node.y, r, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.beginPath(); ctx.arc(node.x, node.y, r*0.3, 0, Math.PI * 2); ctx.fill();
+                if (node.id === selectedNodeId) { ctx.strokeStyle = "var(--neon-cyan)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(node.x, node.y, r+10, 0, Math.PI * 2); ctx.stroke(); }
+                ctx.fillStyle = '#ffffff'; ctx.font = `bold ${fontSize} "Share Tech Mono", monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.shadowBlur = 5; ctx.shadowColor = '#000'; ctx.fillText(node.label, node.x, node.y + r + 15); ctx.shadowBlur = 0;
+            });
+        }
+
+        function createReverbBuffer(ctx) {
+            const length = ctx.sampleRate * 3, impulse = ctx.createBuffer(2, length, ctx.sampleRate);
+            for (let c = 0; c < 2; c++) { const data = impulse.getChannelData(c); for (let i = 0; i < length; i++) { data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.5); } }
+            return impulse;
+        }
+
+        function playOrganicHarmonia() {
+            if (currentGraph.nodes.length === 0) return alert("Inject nodes first.");
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
+            const masterGain = audioCtx.createGain(); masterGain.gain.setValueAtTime(0.1, now); masterGain.gain.exponentialRampToValueAtTime(0.001, now + 8); masterGain.connect(audioCtx.destination);
+            const convolver = audioCtx.createConvolver(); convolver.buffer = createReverbBuffer(audioCtx);
+            const reverbGain = audioCtx.createGain(); reverbGain.gain.value = 0.6; convolver.connect(reverbGain); reverbGain.connect(masterGain);
+            const delay = audioCtx.createDelay(); delay.delayTime.value = 0.4; const delayGain = audioCtx.createGain(); delayGain.gain.value = 0.4; delay.connect(delayGain); delayGain.connect(masterGain); delayGain.connect(delay); 
+            const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.setValueAtTime(300, now); filter.Q.value = 8; filter.connect(masterGain); filter.connect(convolver); filter.connect(delay);
+            const lfo = audioCtx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.3; const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 1200; lfo.connect(lfoGain); lfoGain.connect(filter.frequency); lfo.start(now); lfo.stop(now + 8);
+            
+            currentGraph.nodes.slice(0, 15).forEach(node => {
+                const osc = audioCtx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = node.freq || 220; osc.detune.value = (Math.random() - 0.5) * 25;
+                const panner = audioCtx.createStereoPanner(); panner.pan.value = ((node.x / canvas.width) * 2) - 1;
+                const nodeGain = audioCtx.createGain(); nodeGain.gain.value = 0.1; 
+                osc.connect(nodeGain); nodeGain.connect(panner); panner.connect(filter); osc.start(now); osc.stop(now + 8);
+            });
+            logDiv.innerText = "> Synthesizing Harmonia...";
+        }
+
+        function downloadJSON() {
+            if (currentGraph.nodes.length === 0) return alert("Nothing to export.");
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentGraph, null, 2));
+            const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr); downloadAnchorNode.setAttribute("download", "lattice_data.json");
+            document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove();
+            logDiv.innerText = "> Data packet exported.";
+        }
+
+        function loop() { physicsStep(); draw(); requestAnimationFrame(loop); }
+        resize(); initStars(); loop();
+    </script>
+</body>
+</html>
